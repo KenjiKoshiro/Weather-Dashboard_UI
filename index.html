@@ -510,12 +510,13 @@
     ATMOS
   </div>
 
-  <div class="search-wrap">
+  <form class="search-wrap" id="city-search" role="search">
     <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
       <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
     </svg>
-    <input type="text" placeholder="Search city..."/>
-  </div>
+    <input id="city-input" type="search" aria-label="Search city" placeholder="Search city..." required minlength="2"/>
+    <button type="submit" aria-label="Search weather" style="position:absolute;right:8px;top:8px;background:transparent;border:0;color:var(--blue);cursor:pointer">→</button>
+  </form>
 
   <div class="header-right">
     <div class="temp-toggle">
@@ -528,6 +529,8 @@
 
 <!-- MAIN APP -->
 <div class="app">
+<div id="weather-status" role="status" style="padding:12px 2rem;color:var(--text2)">Loading current weather...</div>
+<div id="city-results" aria-label="Matching cities" style="display:flex;flex-wrap:wrap;gap:8px;padding:0 2rem"></div>
 <div class="main-grid">
 
   <!-- ── LEFT: HERO CARD ── -->
@@ -591,7 +594,6 @@
     <div class="section-card">
       <div class="section-head">
         <div class="section-title">Weather Highlights</div>
-        <a class="section-link">More details →</a>
       </div>
       <div class="highlights-grid">
 
@@ -612,16 +614,16 @@
         <div class="highlight-card">
           <div class="highlight-icon ic-amber">☀️</div>
           <div class="highlight-val">6 / 11</div>
-          <div class="highlight-label">UV Index</div>
+          <div class="highlight-label">UV Max Today</div>
           <div class="uv-gauge"><div class="uv-needle" style="left:52%"></div></div>
-          <div style="font-size:0.68rem;color:#F59E0B;margin-top:4px;font-weight:500;">Moderate</div>
+          <div id="uv-description" style="font-size:0.68rem;color:#F59E0B;margin-top:4px;font-weight:500;"></div>
         </div>
 
         <div class="highlight-card">
           <div class="highlight-icon ic-purple">🌡</div>
           <div class="highlight-val"><span id="feels-card">31</span>°</div>
           <div class="highlight-label">Feels Like</div>
-          <div style="font-size:0.72rem;color:var(--text3);margin-top:8px;">Similar to actual</div>
+          <div style="font-size:0.72rem;color:var(--text3);margin-top:8px;">Apparent temperature</div>
         </div>
 
         <div class="highlight-card">
@@ -635,7 +637,7 @@
           <div class="highlight-icon ic-rose">🔵</div>
           <div class="highlight-val">1013 hPa</div>
           <div class="highlight-label">Pressure</div>
-          <div style="font-size:0.72rem;color:var(--text3);margin-top:8px;">Normal range</div>
+          <div style="font-size:0.72rem;color:var(--text3);margin-top:8px;">Sea-level pressure</div>
         </div>
 
       </div>
@@ -645,7 +647,6 @@
     <div class="section-card">
       <div class="section-head">
         <div class="section-title">Hourly Forecast</div>
-        <a class="section-link">Today →</a>
       </div>
       <div class="hourly-scroll">
         <div class="hour-card active">
@@ -705,7 +706,6 @@
     <div class="section-card">
       <div class="section-head">
         <div class="section-title">7-Day Forecast</div>
-        <a class="section-link">Full week →</a>
       </div>
       <div class="week-grid">
         <div class="day-card today">
@@ -757,45 +757,7 @@
 </div>
 </div>
 
-<script>
-  // Live clock
-  function updateTime() {
-    const now = new Date();
-    const opts = { weekday:'long', year:'numeric', month:'short', day:'numeric' };
-    const dateStr = now.toLocaleDateString('en-US', opts);
-    const timeStr = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
-    const el = document.getElementById('datetime-display');
-    if (el) el.textContent = `${dateStr} · ${timeStr}`;
-  }
-  updateTime();
-  setInterval(updateTime, 30000);
-
-  // Temp unit toggle
-  const data = { tempC: 28, feelsC: 31 };
-  let unit = 'C';
-
-  function setUnit(u) {
-    unit = u;
-    document.getElementById('cel-btn').classList.toggle('active', u === 'C');
-    document.getElementById('fah-btn').classList.toggle('active', u === 'F');
-
-    const toF = c => Math.round(c * 9 / 5 + 32);
-    const temp = u === 'C' ? data.tempC : toF(data.tempC);
-    const feels = u === 'C' ? data.feelsC : toF(data.feelsC);
-
-    document.getElementById('temp-val').textContent = temp;
-    document.getElementById('unit-hero').textContent = u === 'C' ? '°C' : '°F';
-    document.getElementById('feels-val').textContent = feels + (u === 'C' ? '°C' : '°F');
-    document.getElementById('feels-card').textContent = feels;
-  }
-
-  // Hour card click active state
-  document.querySelectorAll('.hour-card').forEach(card => {
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.hour-card').forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
-    });
-  });
-</script>
+<footer style="padding:24px;text-align:center;color:var(--text3);font-size:12px">Weather data by <a href="https://open-meteo.com/" style="color:var(--blue)">Open-Meteo</a> · Location data by GeoNames</footer>
+<script src="weather.js"></script>
 </body>
 </html>
